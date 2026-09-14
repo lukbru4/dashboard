@@ -1,18 +1,18 @@
 {
-  "updated_at": "2026-09-14T17:53:33.836Z",
+  "updated_at": "2026-09-14T18:04:01.166Z",
   "quotes": {
     "GOOGL": {
       "symbol": "GOOGL",
-      "price": 349.585,
+      "price": 349.11,
       "currency": "USD",
-      "marketTime": "2026-09-14T17:53:27.000Z",
+      "marketTime": "2026-09-14T18:03:53.000Z",
       "previousClose": 338.5
     },
     "AAPL": {
       "symbol": "AAPL",
-      "price": 334.22,
+      "price": 333.763,
       "currency": "USD",
-      "marketTime": "2026-09-14T17:53:26.000Z",
+      "marketTime": "2026-09-14T18:03:54.000Z",
       "previousClose": 332.27
     },
     "ZZRA.F": {
@@ -24,9 +24,9 @@
     },
     "AMZN": {
       "symbol": "AMZN",
-      "price": 255.76,
+      "price": 255.245,
       "currency": "USD",
-      "marketTime": "2026-09-14T17:53:28.000Z",
+      "marketTime": "2026-09-14T18:03:51.000Z",
       "previousClose": 256.78
     },
     "IWDA.L": {
@@ -52,9 +52,9 @@
     },
     "MSFT": {
       "symbol": "MSFT",
-      "price": 509.675,
+      "price": 509.33,
       "currency": "USD",
-      "marketTime": "2026-09-14T17:53:29.000Z",
+      "marketTime": "2026-09-14T18:03:55.000Z",
       "previousClose": 495.63
     },
     "IMAE.AS": {
@@ -94,16 +94,16 @@
     },
     "EURUSD=X": {
       "symbol": "EURUSD=X",
-      "price": 1.1561,
+      "price": 1.1559,
       "currency": "USD",
-      "marketTime": "2026-09-14T17:52:59.000Z",
+      "marketTime": "2026-09-14T18:03:59.000Z",
       "previousClose": 1.1601
     },
     "EURGBP=X": {
       "symbol": "EURGBP=X",
       "price": 0.8555,
       "currency": "GBP",
-      "marketTime": "2026-09-14T17:53:32.000Z",
+      "marketTime": "2026-09-14T18:03:59.000Z",
       "previousClose": 0.8574
     }
   },
