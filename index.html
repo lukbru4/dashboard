@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mein Depot</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>Mein Depot <span class="broker">Trade Republic</span></h1>
+      <div class="updated" id="updated">Lade Kurse…</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary" id="summary">
+      <div class="card total">
+        <div class="card-label">Gesamtwert</div>
+        <div class="card-value" id="total-value">–</div>
+        <div class="card-sub" id="total-change">–</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Positionen</div>
+        <div class="card-value" id="position-count">–</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Größte Position</div>
+        <div class="card-value" id="top-position">–</div>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <table id="holdings-table">
+        <thead>
+          <tr>
+            <th class="col-name">Position</th>
+            <th class="col-type">Typ</th>
+            <th class="col-qty">Stück</th>
+            <th class="col-price">Kurs</th>
+            <th class="col-change">Tag %</th>
+            <th class="col-value">Wert (EUR)</th>
+            <th class="col-weight">Anteil</th>
+          </tr>
+        </thead>
+        <tbody id="holdings-body">
+          <tr><td colspan="7" class="loading">Lade Positionen…</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p>
+        Kurse via Yahoo Finance, automatisch aktualisiert durch eine GitHub Action
+        (alle 15 Minuten während der Handelszeiten). Keine Anlageberatung.
+      </p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

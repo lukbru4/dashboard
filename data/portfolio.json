@@ -1,0 +1,19 @@
+{
+  "broker": "Trade Republic",
+  "base_currency": "EUR",
+  "holdings": [
+    { "name": "Alphabet 'A' (Google)", "type": "Aktie", "isin": "US02079K3059", "wkn": "A14Y6F", "quantity": 0.3439, "symbol": "GOOGL", "native_currency": "USD" },
+    { "name": "Apple", "type": "Aktie", "isin": "US0378331005", "wkn": "865985", "quantity": 0.36, "symbol": "AAPL", "native_currency": "USD" },
+    { "name": "Allianz GIF - Allianz Global Artificial Intelligence - A EUR DIS", "type": "Fonds", "isin": "LU1548497186", "wkn": "A2DKAR", "quantity": 7, "symbol": "ZZRA.F", "native_currency": "EUR" },
+    { "name": "Amazon", "type": "Aktie", "isin": "US0231351067", "wkn": "906866", "quantity": 0.46, "symbol": "AMZN", "native_currency": "USD" },
+    { "name": "iShares Core MSCI World UCITS ETF USD Acc", "type": "ETF", "isin": "IE00B4L5Y983", "wkn": "A0RPWH", "quantity": 59.58, "symbol": "IWDA.L", "native_currency": "USD" },
+    { "name": "iShares Core MSCI EM IMI UCITS ETF USD Acc", "type": "ETF", "isin": "IE00BKM4GZ66", "wkn": "A111X9", "quantity": 89.44, "symbol": "EIMI.L", "native_currency": "USD" },
+    { "name": "FTSE All-World High Dividend Yield UCITS ETF (USD) Acc (VGWE)", "type": "ETF", "isin": "IE00BK5BR626", "wkn": "A2PLTB", "quantity": 1.08, "symbol": "VHYA.L", "native_currency": "USD" },
+    { "name": "Microsoft", "type": "Aktie", "isin": "US5949181045", "wkn": "870747", "quantity": 0.23, "symbol": "MSFT", "native_currency": "USD" },
+    { "name": "iShares Core MSCI Europe UCITS ETF EUR Acc", "type": "ETF", "isin": "IE00B4K48X80", "wkn": "A0RPWG", "quantity": 0.96, "symbol": "IMAE.AS", "native_currency": "EUR" },
+    { "name": "iShares NASDAQ US Biotechnology UCITS ETF USD Acc", "type": "ETF", "isin": "IE00BYXG2H39", "wkn": "A2DWAW", "quantity": 22.03, "symbol": "BTEC.L", "native_currency": "USD" },
+    { "name": "VanEck Space Innovators UCITS ETF Acc", "type": "ETF", "isin": "IE000YU9K6K2", "wkn": "A3DP9J", "quantity": 2.67, "symbol": "JEDI.L", "native_currency": "USD" },
+    { "name": "DWS Smart Industrial Technologies - LD EUR DIS", "type": "Fonds", "isin": "DE0005152482", "wkn": "515248", "quantity": 4.05, "symbol": "D2W4.F", "native_currency": "EUR" },
+    { "name": "BIT Global Technology Leaders - R-III EUR Acc", "type": "Fonds", "isin": "DE000A2N8143", "wkn": "A2N814", "quantity": 9.1595, "symbol": "ANTD.MU", "native_currency": "EUR" }
+  ]
+}

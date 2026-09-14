@@ -1,0 +1,113 @@
+﻿{
+    "updated_at":  "2026-09-14T17:25:37Z",
+    "quotes":  {
+                   "AMZN":  {
+                                "symbol":  "AMZN",
+                                "price":  254.75,
+                                "currency":  "USD",
+                                "marketTime":  "2026-09-14T17:25:24Z",
+                                "previousClose":  256.78
+                            },
+                   "BTEC.L":  {
+                                  "symbol":  "BTEC.L",
+                                  "price":  10.165,
+                                  "currency":  "USD",
+                                  "marketTime":  "2026-09-14T15:35:17Z",
+                                  "previousClose":  10.115
+                              },
+                   "MSFT":  {
+                                "symbol":  "MSFT",
+                                "price":  509.04,
+                                "currency":  "USD",
+                                "marketTime":  "2026-09-14T17:25:30Z",
+                                "previousClose":  495.63
+                            },
+                   "GOOGL":  {
+                                 "symbol":  "GOOGL",
+                                 "price":  347.9,
+                                 "currency":  "USD",
+                                 "marketTime":  "2026-09-14T17:25:27Z",
+                                 "previousClose":  338.5
+                             },
+                   "IMAE.AS":  {
+                                   "symbol":  "IMAE.AS",
+                                   "price":  103.465,
+                                   "currency":  "EUR",
+                                   "marketTime":  "2026-09-14T15:35:29Z",
+                                   "previousClose":  103.86
+                               },
+                   "EURGBP=X":  {
+                                    "symbol":  "EURGBP=X",
+                                    "price":  0.8557,
+                                    "currency":  "GBP",
+                                    "marketTime":  "2026-09-14T17:25:33Z",
+                                    "previousClose":  0.8574
+                                },
+                   "IWDA.L":  {
+                                  "symbol":  "IWDA.L",
+                                  "price":  145.96,
+                                  "currency":  "USD",
+                                  "marketTime":  "2026-09-14T17:07:47Z",
+                                  "previousClose":  146.96
+                              },
+                   "VHYA.L":  {
+                                  "symbol":  "VHYA.L",
+                                  "price":  108.0,
+                                  "currency":  "USD",
+                                  "marketTime":  "2026-09-14T16:18:21Z",
+                                  "previousClose":  108.46
+                              },
+                   "ANTD.MU":  {
+                                   "symbol":  "ANTD.MU",
+                                   "price":  724.928,
+                                   "currency":  "EUR",
+                                   "marketTime":  "2026-09-14T06:00:33Z",
+                                   "previousClose":  730.375
+                               },
+                   "EIMI.L":  {
+                                  "symbol":  "EIMI.L",
+                                  "price":  54.28,
+                                  "currency":  "USD",
+                                  "marketTime":  "2026-09-14T16:59:17Z",
+                                  "previousClose":  55.71
+                              },
+                   "D2W4.F":  {
+                                  "symbol":  "D2W4.F",
+                                  "price":  266.036,
+                                  "currency":  "EUR",
+                                  "marketTime":  "2026-09-14T06:02:47Z",
+                                  "previousClose":  267.95
+                              },
+                   "ZZRA.F":  {
+                                  "symbol":  "ZZRA.F",
+                                  "price":  338.067,
+                                  "currency":  "EUR",
+                                  "marketTime":  "2026-09-14T16:23:09Z",
+                                  "previousClose":  346.588
+                              },
+                   "EURUSD=X":  {
+                                    "symbol":  "EURUSD=X",
+                                    "price":  1.1562,
+                                    "currency":  "USD",
+                                    "marketTime":  "2026-09-14T17:24:58Z",
+                                    "previousClose":  1.1601
+                                },
+                   "JEDI.L":  {
+                                  "symbol":  "JEDI.L",
+                                  "price":  78.37,
+                                  "currency":  "USD",
+                                  "marketTime":  "2026-09-14T15:35:20Z",
+                                  "previousClose":  78.78
+                              },
+                   "AAPL":  {
+                                "symbol":  "AAPL",
+                                "price":  334.55,
+                                "currency":  "USD",
+                                "marketTime":  "2026-09-14T17:25:28Z",
+                                "previousClose":  332.27
+                            }
+               },
+    "errors":  [
+
+               ]
+}

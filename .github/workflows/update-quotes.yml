@@ -1,0 +1,31 @@
+name: Update quotes
+
+on:
+  schedule:
+    # Every 15 minutes, weekdays, 07:00-21:45 UTC (covers European + US trading hours)
+    - cron: "*/15 7-21 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch live quotes
+        run: node scripts/update-quotes.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/quotes.json
+          git diff --cached --quiet || git commit -m "chore: update live quotes"
+          git push
