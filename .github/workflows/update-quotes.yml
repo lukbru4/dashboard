@@ -27,5 +27,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/quotes.json
-          git diff --cached --quiet || git commit -m "chore: update live quotes"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: update live quotes"
+          for i in 1 2 3 4 5; do
+            git push && exit 0
+            git pull --rebase origin main
+            sleep $((RANDOM % 5 + 1))
+          done
           git push
