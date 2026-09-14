@@ -58,6 +58,16 @@ function convertSeriesToEur(series, currency, fx) {
   return series.map(([t, v]) => [t, v / nearestValue(fxSeries, t)]);
 }
 
+// Convert a single native-currency amount to EUR using the FX rate closest
+// to timestamp t (falls back to the current FX rate if no series is loaded).
+function toEurAt(amount, currency, t, fx) {
+  if (currency === "EUR") return amount;
+  const fxSeries = currency === "USD" ? fx.EURUSD_series : currency === "GBP" ? fx.EURGBP_series : null;
+  const fallback = currency === "USD" ? fx.EURUSD : fx.EURGBP;
+  const rate = fxSeries && fxSeries.length ? (nearestValue(fxSeries, t) ?? fallback) : fallback;
+  return amount / rate;
+}
+
 function filterRange(series, rangeKey) {
   if (!series || series.length === 0) return [];
   if (rangeKey === "max") return series;
@@ -112,6 +122,53 @@ function renderChart(points) {
   `;
 }
 
+// --- Portfolio total series ---------------------------------------------
+
+const PORTFOLIO_SENTINEL = { isPortfolio: true, name: "Gesamtwert", isin: "", wkn: "", type: "Portfolio" };
+
+// Builds a [[t, totalEurValue], ...] series for the whole portfolio by
+// summing every holding's EUR value at each timestamp of a reference grid.
+function buildPortfolioSeries(rangeKey, fx) {
+  const isToday = rangeKey === "today";
+  let grid = null;
+
+  if (isToday) {
+    let bestLen = 0;
+    for (const h of portfolio.holdings) {
+      const intraday = quoteData.quotes[h.symbol]?.intraday;
+      if (intraday && intraday.length > bestLen) { grid = intraday; bestLen = intraday.length; }
+    }
+  } else {
+    let bestLen = 0;
+    for (const h of portfolio.holdings) {
+      const s = historyData?.series?.[h.symbol];
+      if (s && s.length > bestLen) { grid = s; bestLen = s.length; }
+    }
+    grid = grid ? filterRange(grid, rangeKey) : null;
+  }
+
+  if (!grid || grid.length < 2) return [];
+
+  return grid.map(([t]) => {
+    let total = 0;
+    for (const h of portfolio.holdings) {
+      const q = quoteData.quotes[h.symbol];
+      if (!q) continue;
+      let priceNative;
+      if (isToday) {
+        const intraday = q.intraday && q.intraday.length ? q.intraday : null;
+        priceNative = intraday ? nearestValue(intraday, t) : q.price;
+      } else {
+        const raw = historyData?.series?.[h.symbol];
+        priceNative = raw && raw.length ? nearestValue(raw, t) : q.price;
+      }
+      if (priceNative == null) continue;
+      total += toEurAt(priceNative, h.native_currency, t, fx) * h.quantity;
+    }
+    return [t, total];
+  });
+}
+
 // --- Modal --------------------------------------------------------------
 
 function buildFx() {
@@ -129,7 +186,9 @@ function openModal(holding) {
   currentHolding = holding;
   currentRange = "1m";
   document.getElementById("modal-title").textContent = holding.name;
-  document.getElementById("modal-meta").textContent = `${holding.isin} · ${holding.wkn} · ${holding.type}`;
+  document.getElementById("modal-meta").textContent = holding.isPortfolio
+    ? "Alle Positionen zusammen"
+    : `${holding.isin} · ${holding.wkn} · ${holding.type}`;
   document.getElementById("modal-overlay").hidden = false;
   document.querySelectorAll("#range-tabs button").forEach((b) => b.classList.toggle("active", b.dataset.range === currentRange));
   renderModalRange();
@@ -149,7 +208,12 @@ function renderModalRange() {
   let points; // [[t, eurValue], ...]
   let captionNote = "";
 
-  if (currentRange === "today") {
+  if (h.isPortfolio) {
+    points = buildPortfolioSeries(currentRange, fx);
+    captionNote = currentRange === "today"
+      ? "Intraday-Werte, alle 15 Minuten aktualisiert. Positionen ohne eigene Historie werden mit ihrem letzten bekannten Kurs eingerechnet."
+      : "Tagesschlusskurse. Positionen ohne eigene Historie werden mit ihrem letzten bekannten Kurs eingerechnet.";
+  } else if (currentRange === "today") {
     const q = quoteData.quotes[h.symbol];
     const intraday = q?.intraday || [];
     if (intraday.length >= 2) {
@@ -160,11 +224,12 @@ function renderModalRange() {
     } else {
       points = [];
     }
+    points = points.map(([t, v]) => [t, v * h.quantity]);
     captionNote = "Intraday-Kurse, alle 15 Minuten aktualisiert.";
   } else {
     const raw = historyData?.series?.[h.symbol] || [];
     const filtered = filterRange(raw, currentRange);
-    points = convertSeriesToEur(filtered, h.native_currency, fx);
+    points = convertSeriesToEur(filtered, h.native_currency, fx).map(([t, v]) => [t, v * h.quantity]);
     captionNote = "Tagesschlusskurse.";
   }
 
@@ -180,15 +245,17 @@ function renderModalRange() {
   const endVal = points[points.length - 1][1];
   const changeAbs = endVal - startVal;
   const changePct = startVal ? changeAbs / startVal : 0;
-  const valueNow = endVal * h.quantity;
-  const valueStart = startVal * h.quantity;
+
+  const priceRow = h.isPortfolio ? "" : `
+    <div><div class="stat-label">Kurs aktuell</div><div class="stat-value">${EUR2.format(endVal / h.quantity)}</div></div>
+    <div><div class="stat-label">Kurs Start</div><div class="stat-value">${EUR2.format(startVal / h.quantity)}</div></div>
+  `;
 
   statsEl.innerHTML = `
-    <div><div class="stat-label">Kurs aktuell</div><div class="stat-value">${EUR2.format(endVal)}</div></div>
-    <div><div class="stat-label">Kurs Start</div><div class="stat-value">${EUR2.format(startVal)}</div></div>
+    ${priceRow}
     <div><div class="stat-label">Veränderung</div><div class="stat-value ${changeAbs >= 0 ? "positive" : "negative"}">${changeAbs >= 0 ? "+" : ""}${PCT.format(changePct)}</div></div>
-    <div><div class="stat-label">Wert aktuell</div><div class="stat-value">${EUR.format(valueNow)}</div></div>
-    <div><div class="stat-label">Wert Start</div><div class="stat-value">${EUR.format(valueStart)}</div></div>
+    <div><div class="stat-label">Wert aktuell</div><div class="stat-value">${EUR.format(endVal)}</div></div>
+    <div><div class="stat-label">Wert Start</div><div class="stat-value">${EUR.format(startVal)}</div></div>
     <div><div class="stat-label">Zeitraum</div><div class="stat-value">${DATE_SHORT.format(new Date(points[0][0] * 1000))} – ${DATE_SHORT.format(new Date(points[points.length - 1][0] * 1000))}</div></div>
   `;
 }
@@ -260,6 +327,7 @@ async function main() {
     changeEl.className = `card-sub ${totalChangeAbs >= 0 ? "positive" : "negative"}`;
 
     document.getElementById("position-count").textContent = rows.length;
+    document.getElementById("total-card").onclick = () => openModal(PORTFOLIO_SENTINEL);
 
     const top = [...rows].filter((r) => r.ok).sort((a, b) => b.valueEur - a.valueEur)[0];
     document.getElementById("top-position").textContent = top ? top.name.split(" - ")[0].split(" (")[0] : "–";

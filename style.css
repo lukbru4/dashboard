@@ -104,6 +104,14 @@ main {
   border-color: var(--accent);
 }
 
+.card[data-clickable] {
+  cursor: pointer;
+}
+
+.card[data-clickable]:hover {
+  filter: brightness(1.06);
+}
+
 .card-label {
   font-size: 0.78rem;
   opacity: 0.75;
