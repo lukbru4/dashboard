@@ -1,18 +1,27 @@
-// Fetches live quotes for all holdings + FX rates from Yahoo Finance's public
-// chart endpoint (no API key required) and writes data/quotes.json.
+// Fetches live quotes (+ today's intraday series) for all holdings + FX rates
+// from Yahoo Finance's public chart endpoint (no API key required) and
+// writes data/quotes.json.
 import { readFileSync, writeFileSync } from "node:fs";
 
 const UA = "Mozilla/5.0 (compatible; DepotDashboardBot/1.0)";
 
 async function fetchQuote(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=15m`;
   const res = await fetch(url, { headers: { "User-Agent": UA } });
   if (!res.ok) throw new Error(`${symbol}: HTTP ${res.status}`);
   const json = await res.json();
-  const meta = json?.chart?.result?.[0]?.meta;
+  const result = json?.chart?.result?.[0];
+  const meta = result?.meta;
   if (!meta || meta.regularMarketPrice == null) {
     throw new Error(`${symbol}: no price in response`);
   }
+
+  const timestamps = result.timestamp || [];
+  const closes = result.indicators?.quote?.[0]?.close || [];
+  const intraday = timestamps
+    .map((t, i) => [t, closes[i]])
+    .filter(([, c]) => c != null);
+
   return {
     symbol,
     price: meta.regularMarketPrice,
@@ -21,6 +30,10 @@ async function fetchQuote(symbol) {
       ? new Date(meta.regularMarketTime * 1000).toISOString()
       : null,
     previousClose: meta.chartPreviousClose ?? null,
+    dayOpen: meta.regularMarketOpen ?? null,
+    dayHigh: meta.regularMarketDayHigh ?? null,
+    dayLow: meta.regularMarketDayLow ?? null,
+    intraday, // [[unixSeconds, close], ...] for today, ~15min steps
   };
 }
 
@@ -53,7 +66,7 @@ async function main() {
 
   writeFileSync(
     new URL("../data/quotes.json", import.meta.url),
-    JSON.stringify(out, null, 2) + "\n"
+    JSON.stringify(out) + "\n"
   );
 
   console.log(`Wrote ${Object.keys(quotes).length} quotes, ${errors.length} errors.`);

@@ -6,10 +6,13 @@ live nachgeführten Kursen (Yahoo Finance, kein API-Key nötig).
 ## Wie es funktioniert
 
 - [`data/portfolio.json`](data/portfolio.json) enthält deine Positionen (Stückzahl, ISIN, Ticker) – ändert sich nur bei Kauf/Verkauf.
-- [`data/quotes.json`](data/quotes.json) enthält die aktuellen Kurse – wird automatisch per GitHub Action aktualisiert.
-- [`scripts/update-quotes.mjs`](scripts/update-quotes.mjs) holt die Kurse von Yahoo Finance und schreibt `quotes.json`.
+- [`data/quotes.json`](data/quotes.json) enthält aktuelle Kurse + heutigen Intraday-Verlauf – wird automatisch per GitHub Action aktualisiert.
+- [`data/history.json`](data/history.json) enthält bis zu 5 Jahre Tagesschlusskurse je Position – wird einmal täglich aktualisiert.
+- [`scripts/update-quotes.mjs`](scripts/update-quotes.mjs) holt Kurse + Intraday-Daten von Yahoo Finance und schreibt `quotes.json`.
+- [`scripts/update-history.mjs`](scripts/update-history.mjs) holt die Langfrist-Historie und schreibt `history.json`.
 - [`.github/workflows/update-quotes.yml`](.github/workflows/update-quotes.yml) läuft alle 15 Minuten (Mo–Fr, 7–22 Uhr UTC) und committed die neuen Kurse.
-- `index.html` / `app.js` / `style.css` sind das eigentliche Dashboard, das die beiden JSON-Dateien lädt und Werte in EUR umrechnet.
+- [`.github/workflows/update-history.yml`](.github/workflows/update-history.yml) läuft einmal täglich und committed die Kurshistorie.
+- `index.html` / `app.js` / `style.css` sind das eigentliche Dashboard: Tabelle mit allen Positionen in EUR, per Klick auf eine Zeile öffnet sich der Kursverlauf (Heute / 1W / 1M / YTD / 1J / 3J / 5J / Max).
 
 ## Setup in GitHub
 
@@ -39,6 +42,6 @@ https://query2.finance.yahoo.com/v1/finance/search?q=<ISIN>
 ## Hinweise
 
 - Kurse sind mit ca. 15 Minuten Verzögerung "live" (Takt der GitHub Action), keine Echtzeit-Handelsdaten.
-- Für einige ETFs werden Londoner USD-Notierungen verwendet (Trade Republic bietet ggf. andere Handelsplätze); Werte werden aber korrekt in EUR umgerechnet.
-- Fonds (Allianz GIF, DWS, BIT) werden über deren Frankfurt/München-Notierung abgebildet.
+- Für einige ETFs werden Londoner USD-Notierungen verwendet (Trade Republic bietet ggf. andere Handelsplätze); alle Werte werden aber live in EUR umgerechnet (inkl. historischer FX-Kurse für die Charts).
+- Fonds (Allianz GIF, DWS, BIT) werden über deren Frankfurt/München-Notierung abgebildet. Für Allianz GIF und BIT Global Technology Leaders liefert Yahoo dort keine Kurshistorie – die Detailansicht zeigt für diese beiden nur "Heute" bzw. den aktuellen Kurs, keinen Langfrist-Chart.
 - Keine Anlageberatung.

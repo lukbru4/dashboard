@@ -38,7 +38,7 @@
             <th class="col-name">Position</th>
             <th class="col-type">Typ</th>
             <th class="col-qty">Stück</th>
-            <th class="col-price">Kurs</th>
+            <th class="col-price">Kurs (EUR)</th>
             <th class="col-change">Tag %</th>
             <th class="col-value">Wert (EUR)</th>
             <th class="col-weight">Anteil</th>
@@ -53,10 +53,35 @@
     <footer>
       <p>
         Kurse via Yahoo Finance, automatisch aktualisiert durch eine GitHub Action
-        (alle 15 Minuten während der Handelszeiten). Keine Anlageberatung.
+        (alle 15 Minuten während der Handelszeiten). Alle Werte in EUR umgerechnet.
+        Keine Anlageberatung.
       </p>
     </footer>
   </main>
+
+  <div id="modal-overlay" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" id="modal-close" aria-label="Schließen">&times;</button>
+      <h2 id="modal-title"></h2>
+      <div class="modal-meta" id="modal-meta"></div>
+
+      <div class="range-tabs" id="range-tabs">
+        <button data-range="today">Heute</button>
+        <button data-range="1w">1W</button>
+        <button data-range="1m">1M</button>
+        <button data-range="ytd">YTD</button>
+        <button data-range="1y">1J</button>
+        <button data-range="3y">3J</button>
+        <button data-range="5y">5J</button>
+        <button data-range="max">Max</button>
+      </div>
+
+      <div class="chart-wrap" id="chart-wrap">
+        <div class="chart-loading" id="chart-loading">Lade Verlauf…</div>
+      </div>
+      <div class="chart-stats" id="chart-stats"></div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
