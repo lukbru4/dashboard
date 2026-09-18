@@ -1,37 +1,16 @@
+/* Immer dunkel, in denselben Farben wie Ultron — unabhängig von der Windows-/Browser-Einstellung. */
 :root {
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --border: #e5e7eb;
-  --text: #16181d;
-  --text-muted: #6b7280;
-  --accent: #2563eb;
-  --positive: #16a34a;
-  --negative: #dc2626;
+  color-scheme: dark;
+  --bg: #111113;
+  --surface: #18181b;
+  --surface-high: #1f1f23;
+  --border: #26262b;
+  --text: #e6e6e9;
+  --text-muted: #8a8a93;
+  --accent: #8bb3e6;
+  --positive: #4fb286;
+  --negative: #e0625d;
   --radius: 10px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1115;
-    --surface: #171a21;
-    --border: #2a2e37;
-    --text: #f1f2f4;
-    --text-muted: #9aa1ac;
-    --accent: #5b9dff;
-    --positive: #34d399;
-    --negative: #f87171;
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg: #0f1115;
-  --surface: #171a21;
-  --border: #2a2e37;
-  --text: #f1f2f4;
-  --text-muted: #9aa1ac;
-  --accent: #5b9dff;
-  --positive: #34d399;
-  --negative: #f87171;
 }
 
 * { box-sizing: border-box; }
@@ -99,9 +78,8 @@ main {
 }
 
 .card.total {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
+  background: var(--surface-high);
+  border-color: #34343b;
 }
 
 .card[data-clickable] {
@@ -179,14 +157,14 @@ tbody tr[data-clickable] {
 }
 
 tbody tr:hover {
-  background: rgba(37, 99, 235, 0.05);
+  background: rgba(255, 255, 255, 0.035);
 }
 
 /* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.72);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -254,10 +232,14 @@ tbody tr:hover {
   cursor: pointer;
 }
 
+.range-tabs button:hover {
+  border-color: var(--text-muted);
+}
+
 .range-tabs button.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
 }
 
 .chart-wrap {
@@ -269,6 +251,66 @@ tbody tr:hover {
   width: 100%;
   height: 220px;
   display: block;
+}
+
+/* Fadenkreuz wie bei onvista/Yahoo: senkrechte Linie + Punkt + Wertkästchen */
+.chart-flaeche {
+  position: relative;
+  height: 220px;
+  cursor: crosshair;
+  touch-action: pan-y;
+  outline: none;
+}
+
+.chart-flaeche:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.fk-linie {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  background: rgba(230, 230, 233, 0.4);
+  pointer-events: none;
+}
+
+.fk-punkt {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 2px solid var(--bg);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.fk-info {
+  position: absolute;
+  top: 0;
+  padding: 6px 10px;
+  background: var(--surface-high);
+  border: 1px solid #34343b;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.fk-zeit { color: var(--text-muted); }
+.fk-wert { font-weight: 700; font-size: 0.95rem; }
+.fk-kurs { color: var(--text-muted); }
+
+.chart-hilfe {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
 
 .chart-loading, .chart-empty {
@@ -298,11 +340,6 @@ tbody tr:hover {
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
-
-.card.total .positive,
-.card.total .negative {
-  color: #fff;
-}
 
 .loading, .error {
   text-align: center;

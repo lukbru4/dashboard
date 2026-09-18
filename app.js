@@ -89,7 +89,7 @@ function filterRange(series, rangeKey) {
 function renderChart(points) {
   const w = 640, h = 220, padX = 8, padY = 20;
   if (!points || points.length < 2) {
-    return `<div class="chart-empty">Keine Verlaufsdaten verfügbar.</div>`;
+    return { html: `<div class="chart-empty">Keine Verlaufsdaten verfügbar.</div>`, geom: null };
   }
   const values = points.map((p) => p[1]);
   const min = Math.min(...values);
@@ -114,12 +114,89 @@ function renderChart(points) {
   const isUp = endVal >= startVal;
   const color = isUp ? "var(--positive)" : "var(--negative)";
 
-  return `
-    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Kursverlauf">
-      <path d="${areaPath}" fill="${color}" opacity="0.12" stroke="none"></path>
-      <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
-    </svg>
-  `;
+  return {
+    geom: { w, h, padX, padY, min, range, t0, tRange },
+    html: `
+      <div class="chart-flaeche" tabindex="0" aria-label="Kursverlauf. Mit der Maus über den Chart fahren oder die Pfeiltasten nutzen, um einzelne Werte zu sehen.">
+        <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+          <path d="${areaPath}" fill="${color}" opacity="0.12" stroke="none"></path>
+          <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+        </svg>
+        <div class="fk-linie" hidden></div>
+        <div class="fk-punkt" hidden></div>
+        <div class="fk-info" hidden aria-live="polite"></div>
+      </div>
+    `,
+  };
+}
+
+// Fadenkreuz: senkrechte Linie folgt Maus, Finger oder Pfeiltasten und zeigt den Wert an dieser Stelle.
+function enableCrosshair(wrap, points, geom, { intraday, quantity }) {
+  const flaeche = wrap.querySelector(".chart-flaeche");
+  if (!flaeche || !geom) return;
+  const linie = flaeche.querySelector(".fk-linie");
+  const punkt = flaeche.querySelector(".fk-punkt");
+  const info = flaeche.querySelector(".fk-info");
+  const startWert = points[0][1];
+  const zeit = intraday
+    ? (d) => d.toLocaleString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+    : (d) => d.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
+  let index = null;
+
+  const naechsterIndex = (clientX) => {
+    const rahmen = flaeche.getBoundingClientRect();
+    const vx = ((clientX - rahmen.left) / rahmen.width) * geom.w;
+    const t = geom.t0 + ((vx - geom.padX) / (geom.w - 2 * geom.padX)) * geom.tRange;
+    let lo = 0, hi = points.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (points[mid][0] < t) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo > 0 && Math.abs(points[lo - 1][0] - t) < Math.abs(points[lo][0] - t) ? lo - 1 : lo;
+  };
+
+  const zeige = (i) => {
+    index = Math.max(0, Math.min(points.length - 1, i));
+    const [t, v] = points[index];
+    const breite = flaeche.clientWidth, hoehe = flaeche.clientHeight;
+    const x = ((geom.padX + ((t - geom.t0) / geom.tRange) * (geom.w - 2 * geom.padX)) / geom.w) * breite;
+    const y = ((geom.h - geom.padY - ((v - geom.min) / geom.range) * (geom.h - 2 * geom.padY)) / geom.h) * hoehe;
+    const diff = startWert ? (v - startWert) / startWert : 0;
+
+    info.innerHTML = `
+      <div class="fk-zeit">${zeit(new Date(t * 1000))}</div>
+      <div class="fk-wert">${EUR.format(v)}</div>
+      ${quantity ? `<div class="fk-kurs">Kurs ${EUR2.format(v / quantity)}</div>` : ""}
+      <div class="${diff >= 0 ? "positive" : "negative"}">${diff >= 0 ? "+" : ""}${PCT.format(diff)} seit Beginn</div>`;
+    linie.hidden = punkt.hidden = info.hidden = false;
+    linie.style.left = `${x}px`;
+    punkt.style.left = `${x}px`;
+    punkt.style.top = `${y}px`;
+    // Kästchen neben der Linie, auf der Seite mit mehr Platz — so verdeckt es den Kurs unter dem Mauszeiger nicht.
+    const abstand = 12;
+    const links = x + abstand + info.offsetWidth <= breite ? x + abstand : x - abstand - info.offsetWidth;
+    info.style.left = `${Math.max(0, links)}px`;
+  };
+
+  const verstecke = () => {
+    index = null;
+    linie.hidden = punkt.hidden = info.hidden = true;
+  };
+
+  flaeche.addEventListener("pointermove", (e) => zeige(naechsterIndex(e.clientX)));
+  flaeche.addEventListener("pointerdown", (e) => zeige(naechsterIndex(e.clientX)));
+  flaeche.addEventListener("pointerleave", verstecke);
+  flaeche.addEventListener("blur", verstecke);
+  flaeche.addEventListener("keydown", (e) => {
+    const schritt = e.shiftKey ? 10 : 1;
+    if (e.key === "ArrowLeft") zeige((index ?? points.length - 1) - schritt);
+    else if (e.key === "ArrowRight") zeige((index ?? 0) + schritt);
+    else if (e.key === "Home") zeige(0);
+    else if (e.key === "End") zeige(points.length - 1);
+    else return;
+    e.preventDefault();
+  });
 }
 
 // --- Portfolio total series ---------------------------------------------
@@ -239,7 +316,12 @@ function renderModalRange() {
     return;
   }
 
-  chartWrap.innerHTML = renderChart(points) + `<div class="chart-note" style="margin-top:6px;font-size:.72rem;color:var(--text-muted)">${captionNote}</div>`;
+  const chart = renderChart(points);
+  chartWrap.innerHTML = chart.html + `<div class="chart-hilfe">${captionNote} Mit der Maus über den Chart fahren, um einzelne Werte zu sehen.</div>`;
+  enableCrosshair(chartWrap, points, chart.geom, {
+    intraday: currentRange === "today",
+    quantity: h.isPortfolio ? null : h.quantity,
+  });
 
   const startVal = points[0][1];
   const endVal = points[points.length - 1][1];
